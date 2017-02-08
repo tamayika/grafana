@@ -126,9 +126,10 @@ type GetUserProfileQuery struct {
 }
 
 type SearchUsersQuery struct {
-	Query string
-	Page  int
-	Limit int
+	Query      string
+	Page       int
+	Limit      int
+	TotalCount int64
 
 	Result []*UserSearchHitDTO
 }

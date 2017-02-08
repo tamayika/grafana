@@ -350,6 +350,10 @@ func SearchUsers(query *m.SearchUsersQuery) error {
 	sess.Limit(query.Limit, query.Limit*query.Page)
 	sess.Cols("id", "email", "name", "login", "is_admin")
 	err := sess.Find(&query.Result)
+
+	user := m.User{}
+	count, err := x.Count(&user)
+	query.TotalCount = count
 	return err
 }
 
