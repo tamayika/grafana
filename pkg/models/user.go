@@ -126,12 +126,16 @@ type GetUserProfileQuery struct {
 }
 
 type SearchUsersQuery struct {
-	Query      string
-	Page       int
-	Limit      int
-	TotalCount int64
+	Query string
+	Page  int
+	Limit int
 
-	Result []*UserSearchHitDTO
+	Result SearchUserQueryResult
+}
+
+type SearchUserQueryResult struct {
+	TotalCount int64               `json:"totalCount"`
+	Users      []*UserSearchHitDTO `json:"users"`
 }
 
 type GetUserOrgListQuery struct {

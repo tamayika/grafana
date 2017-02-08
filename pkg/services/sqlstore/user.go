@@ -344,16 +344,20 @@ func GetSignedInUser(query *m.GetSignedInUserQuery) error {
 }
 
 func SearchUsers(query *m.SearchUsersQuery) error {
-	query.Result = make([]*m.UserSearchHitDTO, 0)
+	query.Result = m.SearchUserQueryResult{
+		Users: make([]*m.UserSearchHitDTO, 0),
+	}
 	sess := x.Table("user")
 	sess.Where("email LIKE ?", query.Query+"%")
 	sess.Limit(query.Limit, query.Limit*query.Page)
 	sess.Cols("id", "email", "name", "login", "is_admin")
-	err := sess.Find(&query.Result)
+	if err := sess.Find(&query.Result.Users); err != nil {
+		return err
+	}
 
 	user := m.User{}
 	count, err := x.Count(&user)
-	query.TotalCount = count
+	query.Result.TotalCount = count
 	return err
 }
 

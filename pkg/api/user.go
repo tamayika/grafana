@@ -210,12 +210,18 @@ func ChangeUserPassword(c *middleware.Context, cmd m.ChangeUserPasswordCommand) 
 
 // GET /api/users
 func SearchUsers(c *middleware.Context) Response {
-	query := m.SearchUsersQuery{Query: "", Page: 0, Limit: 1000}
+	limit := c.QueryInt("limit")
+	if limit == 0 {
+		limit = 1000
+	}
+	page := c.QueryInt("page")
+
+	query := m.SearchUsersQuery{Query: "", Page: page, Limit: limit}
 	if err := bus.Dispatch(&query); err != nil {
 		return ApiError(500, "Failed to fetch users", err)
 	}
 
-	return Json(200, query.Result)
+	return Json(200, query.Result.Users)
 }
 
 func SetHelpFlag(c *middleware.Context) Response {

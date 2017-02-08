@@ -59,7 +59,9 @@ func loggedInUserScenario(desc string, url string, fn scenarioFunc) {
 	Convey(desc+" "+url, func() {
 		defer bus.ClearBusHandlers()
 
-		sc := &scenarioContext{}
+		sc := &scenarioContext{
+			url: url,
+		}
 		viewsPath, _ := filepath.Abs("../../public/views")
 
 		sc.m = macaron.New()
@@ -98,6 +100,20 @@ func (sc *scenarioContext) fakeReq(method, url string) *scenarioContext {
 	return sc
 }
 
+func (sc *scenarioContext) fakeReqWithParams(method, url string, queryParams map[string]string) *scenarioContext {
+	sc.resp = httptest.NewRecorder()
+	req, err := http.NewRequest(method, url, nil)
+	q := req.URL.Query()
+	for k, v := range queryParams {
+		q.Add(k, v)
+	}
+	req.URL.RawQuery = q.Encode()
+	So(err, ShouldBeNil)
+	sc.req = req
+
+	return sc
+}
+
 type scenarioContext struct {
 	m              *macaron.Macaron
 	context        *middleware.Context
@@ -105,6 +121,7 @@ type scenarioContext struct {
 	handlerFunc    handlerFunc
 	defaultHandler macaron.Handler
 	req            *http.Request
+	url            string
 }
 
 func (sc *scenarioContext) exec() {

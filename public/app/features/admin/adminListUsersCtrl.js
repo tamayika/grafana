@@ -13,8 +13,8 @@ function (angular) {
     };
 
     $scope.getUsers = function() {
-      backendSrv.get('/api/users').then(function(users) {
-        $scope.users = users;
+      backendSrv.get('/api/users').then(function(result) {
+        $scope.users = result.users;
       });
     };
 
