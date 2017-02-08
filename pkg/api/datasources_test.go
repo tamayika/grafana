@@ -71,16 +71,18 @@ func loggedInUserScenario(desc string, url string, fn scenarioFunc) {
 		sc.m.Use(middleware.GetContextHandler())
 		sc.m.Use(middleware.Sessioner(&session.Options{}))
 
-		sc.defaultHandler = func(c *middleware.Context) {
+		sc.defaultHandler = wrap(func(c *middleware.Context) Response {
 			sc.context = c
 			sc.context.UserId = TestUserID
 			sc.context.OrgId = TestOrgID
 			sc.context.OrgRole = models.ROLE_EDITOR
 			if sc.handlerFunc != nil {
-				sc.handlerFunc(sc.context)
+				return sc.handlerFunc(sc.context)
 			}
-		}
-		sc.m.SetAutoHead(true)
+
+			return nil
+		})
+
 		sc.m.Get(url, sc.defaultHandler)
 
 		fn(sc)
@@ -110,4 +112,4 @@ func (sc *scenarioContext) exec() {
 }
 
 type scenarioFunc func(c *scenarioContext)
-type handlerFunc func(c *middleware.Context)
+type handlerFunc func(c *middleware.Context) Response

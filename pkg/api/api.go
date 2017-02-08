@@ -195,7 +195,7 @@ func (hs *HttpServer) registerRoutes() {
 
 		// Data sources
 		r.Group("/datasources", func() {
-			r.Get("/", GetDataSources)
+			r.Get("/", wrap(GetDataSources))
 			r.Post("/", quota("data_source"), bind(m.AddDataSourceCommand{}), AddDataSource)
 			r.Put("/:id", bind(m.UpdateDataSourceCommand{}), wrap(UpdateDataSource))
 			r.Delete("/:id", DeleteDataSource)
