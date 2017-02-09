@@ -224,6 +224,22 @@ func SearchUsers(c *middleware.Context) Response {
 	return Json(200, query.Result.Users)
 }
 
+// GET /api/paged-users
+func SearchUsersWithPaging(c *middleware.Context) Response {
+	limit := c.QueryInt("limit")
+	if limit == 0 {
+		limit = 1000
+	}
+	page := c.QueryInt("page")
+
+	query := m.SearchUsersQuery{Query: "", Page: page, Limit: limit}
+	if err := bus.Dispatch(&query); err != nil {
+		return ApiError(500, "Failed to fetch users", err)
+	}
+
+	return Json(200, query.Result)
+}
+
 func SetHelpFlag(c *middleware.Context) Response {
 	flag := c.ParamsInt64(":id")
 
